@@ -1,0 +1,136 @@
+# GitLab CI/CD Pipeline for ESP RainMaker Home App
+
+stages:
+  - quality
+  - build
+  - test
+
+variables:
+  LANG: en_US.UTF-8
+  LC_ALL: en_US.UTF-8
+  NVM_DIR: "$HOME/.nvm"
+
+
+before_script:
+  - export PATH="/usr/local/opt/python@3.10/libexec/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
+  - export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH"
+
+  - if ! command -v node >/dev/null 2>&1; then echo "Node not in PATH — loading NVM"; export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; export PATH="$HOME/.nvm/versions/node/v22.21.1/bin:$PATH"; fi
+
+  - if ! command -v node >/dev/null 2>&1; then echo "Node not available — aborting"; exit 1; fi
+
+  - node -v
+  - npm -v
+  - python3 --version
+  - which python3
+  - ruby -v
+  - echo "ANDROID_HOME=$ANDROID_HOME"
+  - echo "PATH=$PATH"
+
+
+###############################################################
+# QUALITY — ESLint + TypeScript + architecture check on every MR
+# Mirrors the local pre-commit gate: npm run check
+# Fails the pipeline before any build starts if standards are violated.
+###############################################################
+
+code_quality:
+  stage: quality
+  tags: [mac-mobile-runner]
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+  script:
+    - npm ci
+    - npm run check
+  allow_failure: false
+
+###############################################################
+# ANDROID — MR builds APK
+###############################################################
+
+android_apk:
+  stage: build
+  tags: [mac-mobile-runner]
+  needs:
+    - job: code_quality
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+  script:
+    - npm ci
+
+    - if [ -f .env.example ]; then cp .env.example .env; echo "Created .env from .env.example"; else echo ".env.example not found, skipping"; fi
+
+    # Release signing + Firebase config from CI variables (base64-encoded files; same as GitHub FS_* secrets).
+    # Configure: FS_KEYSTORE_FILE, FS_KEY_PROPERTIES_FILE, FS_GOOGLE_SERVICES_JSON (see scripts/secrets_to_base64.sh).
+    # keystore.properties must use e.g. storeFile=app/release.keystore when the keystore is under android/app/.
+    - |
+      set -euo pipefail
+      umask 077
+      [ -n "${FS_KEYSTORE_FILE:-}" ] && [ -n "${FS_KEY_PROPERTIES_FILE:-}" ] && [ -n "${FS_GOOGLE_SERVICES_JSON:-}" ] || exit 1
+      mkdir -p android/app
+      printf '%s' "$FS_KEYSTORE_FILE" | base64 -d > android/app/release.keystore
+      printf '%s' "$FS_KEY_PROPERTIES_FILE" | base64 -d > android/keystore.properties
+      printf '%s' "$FS_GOOGLE_SERVICES_JSON" | base64 -d > android/app/google-services.json
+      test -s android/app/release.keystore
+      test -s android/keystore.properties
+      test -s android/app/google-services.json
+
+    - if [ -z "${ANDROID_HOME:-}" ]; then echo "ANDROID_HOME is not set (configure it as a GitLab CI variable or runner env)"; exit 1; fi
+    - echo "sdk.dir=${ANDROID_HOME}" > android/local.properties
+    - cat android/local.properties
+
+    # Clear stale Metro/Babel transform cache to avoid stale module resolution
+    - rm -rf /tmp/metro-* "${TMPDIR:-/tmp}/metro-"* "${TMPDIR:-/tmp}/haste-map-"* 2>/dev/null || true
+
+    # Run Fastlane
+    - cd android/fastlane
+    - bundle install
+    - bundle exec fastlane android apk
+
+  artifacts:
+    paths:
+      - artifacts/android/
+    expire_in: 1 day
+
+###############################################################
+# ANDROID — Run tests
+###############################################################
+
+android_test:
+  stage: test
+  tags: [mac-mobile-qa]
+  needs:
+    - job: android_apk
+      artifacts: true
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+  script:
+    - set -euo pipefail
+    - APK_PATH="${CI_PROJECT_DIR}/artifacts/android/app-release.apk"
+    - if [ ! -f "${APK_PATH}" ]; then echo "APK not found at ${APK_PATH}"; ls -la artifacts/android || true; exit 1; fi
+    - echo "APK_PATH=${APK_PATH}"
+
+    - if [ -f .env.example ]; then cp .env.example .env; fi
+    - mkdir -p test/artifacts/android
+    - cp "${APK_PATH}" test/artifacts/android/app-release.apk
+    - ls -la test/artifacts/android
+
+    - cd test
+    - python3 -m venv .venv
+    - . .venv/bin/activate
+    - python -m pip install -U pip
+    - pip install -r requirements.txt
+    - python scripts/ci_setup_config.py
+
+    - MODEL="${MODEL:-SM-S711B}"
+    - CHIP="${CHIP:-esp32c3}"
+    - MARKER="${MARKER:-sanity}"
+
+    - |
+      python -m pytest \
+        --model "${MODEL}" \
+        --chip "${CHIP}" \
+        -m "${MARKER}" \
+        --tb=short \
+        --disable-warnings \
+        -v

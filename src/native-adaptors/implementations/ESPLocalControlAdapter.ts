@@ -1,0 +1,86 @@
+/*
+ * SPDX-FileCopyrightText: 2025 Espressif Systems (Shanghai) CO LTD
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { ESPLocalControlAdapterInterface } from "@store";
+import ESPLocalControlModule from "../interfaces/ESPLocalControlInterface";
+
+const ESPLocalControlAdapter: ESPLocalControlAdapterInterface = {
+  /**
+   * Checks if a device with the given node ID is connected locally.
+   * @param nodeId - The unique identifier of the device.
+   * @returns - Resolves to `true` if the device is connected, `false` otherwise.
+   * @throws {Error} - Throws an error if the check fails.
+   */
+  isConnected: async (nodeId: string): Promise<boolean> => {
+    try {
+      const res = await ESPLocalControlModule.isConnected(nodeId);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Establishes a connection with the ESP device using the specified parameters.
+   * @param nodeId - The unique identifier of the device.
+   * @param baseurl - The base URL of the device (including IP address and port).
+   * @param securityType - The security type (0: None, 1: Security1, 2: Security2).
+   * @param [pop] - The proof of possession for secure connections (optional).
+   * @param [username] - The username for Security2 authentication (optional).
+   * @returns - Resolves with a record containing connection details on success.
+   * @throws {Error} - Throws an error if the connection fails.
+   *
+   * Notes:
+   * - If `username` is not provided and `securityType` is 2, a default username `wifiprov` is used.
+   */
+  connect: async (
+    nodeId: string,
+    baseurl: string,
+    securityType: number,
+    pop?: string,
+    username?: string
+  ): Promise<Record<string, any>> => {
+    try {
+      let _username;
+      if (!username) {
+        _username = securityType === 2 ? "wifiprov" : "";
+      }
+      const res = await ESPLocalControlModule.connect(
+        nodeId,
+        baseurl,
+        securityType,
+        pop,
+        _username
+      );
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Sends data to the connected ESP device at the specified path.
+   * @param nodeId - The unique identifier of the device.
+   * @param path - The endpoint path to which data will be sent.
+   * @param data - The data to send, encoded as a Base64 string.
+   * @returns - Resolves with the response from the device, encoded as a Base64 string.
+   * @throws {Error} - Throws an error if the data transmission fails.
+   */
+  sendData: async (
+    nodeId: string,
+    path: string,
+    data: string
+  ): Promise<string> => {
+    try {
+      const res = await ESPLocalControlModule.sendData(nodeId, path, data);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export default ESPLocalControlAdapter;
