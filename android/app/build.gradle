@@ -126,8 +126,7 @@ android {
             jniLibs.srcDirs = ['third_party/connectedhomeip/libs/jniLibs']
         }
     }
-    defaultConfig {
-        applicationId "com.espressif.novahome"
+    defaultConfig {        applicationId "com.espressif.novahome"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode getProp("ANDROID_VERSION_CODE").toInteger()

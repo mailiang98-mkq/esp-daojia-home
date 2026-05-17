@@ -19,8 +19,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
     ].toList()
     ex.autolinkLibrariesFromCommand(command)
   }
-}
-rootProject.name = 'com.espressif.novahome'
+}rootProject.name = 'com.espressif.novahome'
 
 dependencyResolutionManagement {
   versionCatalogs {
