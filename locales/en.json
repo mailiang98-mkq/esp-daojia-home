@@ -214,12 +214,7 @@
       "passwordResetFailed": "Failed to reset password",
       "autoSignInFailed": "Failed to auto sign in",
       "failedToSaveProfile": "Failed to save profile",
-      "pleaseTryAgain": "Please try again",
-      "oauthCancelled": "OAuth login was cancelled.",
-      "oauthNoBrowser": "No browser app found. Please install a browser.",
-      "oauthErrorWithMessage": "OAuth error: {{message}}",
-      "oauthUnknownFailure": "OAuth login failed. Please try again.",
-      "oauthLoginFailedTitle": "OAuth Login Failed"
+      "pleaseTryAgain": "Please try again"
     }
   },
   "user": {
@@ -230,9 +225,10 @@
         "title": "Voice Assistants and Integrations"
       },
       "logoutModal": {
-        "message": "Are you sure you want to log out? If you log out from the application, the agents which are configured from your account will also get logged out.",
-        "confirmButton": "Yes, Log Out",
-        "cancelButton": "Stay Logged In"
+      "message": "Are you sure you want to log out? If you log out from the application, the agents which are configured from your account will also get logged out.",
+      "confirmButton": "Yes, Log Out",
+      "cancelButton": "Stay Logged In",
+      "logout": "Log Out"
       }
     },
     "settings": {
@@ -323,11 +319,7 @@
       "roomAllDevicesPowerOn": "All devices in {{roomName}} are now on.",
       "roomAllDevicesPowerOff": "All devices in {{roomName}} are now off.",
       "singleDeviceCountPostfix": "device",
-      "multipleDeviceCountPostfix": "devices",
-      "allOn": "All On",
-      "allOff": "All Off",
-      "filterAll": "All",
-      "filterOther": "Other"
+      "multipleDeviceCountPostfix": "devices"
     },
     "homeManagement": {
       "title": "Home Management",
@@ -387,11 +379,7 @@
       "expiresInDays": "{{count}} days",
       "expiresInDay": "1 day",
       "expiresToday": "Expires today",
-      "sharing": "Sharing",
-      "confirmRevokePendingShareTitle": "Revoke invite?",
-      "confirmRevokePendingShareMessage": "This will cancel the pending share request for {{username}}.",
-      "confirmRemoveSharedUserTitle": "Remove access?",
-      "confirmRemoveSharedUserMessage": "Access for {{username}} will be removed. They will no longer see this Home."
+      "sharing": "Sharing"
     },
     "deviceGroups": {
       "addYourFirstGroup": "Add your first group",
@@ -514,22 +502,6 @@
       "placeholder": "Code",
       "verify": "Connect device"
     },
-    "deviceDetails": {
-      "nameRequired": "Please enter a device name",
-      "updateNameTitle": "Name your device",
-      "selectRoomTitle": "Add to a room",
-      "createRoomAction": "Create new room",
-      "continue": "Continue",
-      "enterName": "Enter Device Name",
-      "selectARoom": "Select a room",
-      "cancel": "Cancel",
-      "deviceAddedToRoom": "Device added to room",
-      "noRoomsAvailable": "No rooms available. Choose a name to create one.",
-      "skip": "Skip",
-      "exitSetupToHomeTitle": "Leave setup?",
-      "exitSetupToHomeMessage": "You can finish naming your device and setting its room later from the home screen.",
-      "goToHome": "Go to home"
-    },
     "provision": {
       "title": "Connecting Device",
       "success": "Device provisioned successfully",
@@ -638,11 +610,6 @@
       "password": "Password",
       "connect": "Connect",
       "saveNetwork": "Save Wi-Fi",
-      "joinOtherNetworkLink": "Join Other Network",
-      "joinOtherNetworkModal": {
-        "title": "Enter Network Information",
-        "ssidInputPlaceholder": "Network Name"
-      },
       "signalStrength": {
         "excellent": "Excellent",
         "good": "Good",
@@ -754,8 +721,7 @@
       "checkOTAUpdateError": "Failed to check for updates",
       "otaUpdateStartError": "Failed to start update",
       "failedToUpdateTimezone": "Failed to update timezone",
-      "noReadmeURLProvided": "No README URL provided",
-      "deviceNotConnected": "Device is not connected"
+      "noReadmeURLProvided": "No README URL provided"
     },
     "chart": {
       "title": "Chart",
@@ -786,45 +752,6 @@
         "max": "Max",
         "count": "Count",
         "latest": "Latest"
-      }
-    },
-    "camera": {
-      "errors": {
-        "channelNameRequired": "Channel name is required for video streaming",
-        "failedToGetCredentials": "Failed to get AWS credentials",
-        "signalingError": "Signaling error occurred",
-        "failedToStartStreaming": "Failed to start streaming",
-        "connectionFailed": "Connection failed"
-      },
-      "loading": "Connecting video ...",
-      "connectionState": {
-        "connected": "CONNECTED",
-        "disconnected": "DISCONNECTED",
-        "live": "LIVE",
-        "error": "ERROR",
-        "unknown": "UNKNOWN"
-      },
-      "stats": {
-        "loading": "Loading stats...",
-        "title": "Video Statistics",
-        "sections": {
-          "video": "VIDEO",
-          "network": "NETWORK"
-        },
-        "labels": {
-          "resolution": "Resolution",
-          "currentFps": "Current FPS",
-          "receivedFps": "Received FPS",
-          "droppedFps": "Dropped FPS",
-          "framesDropped": "Frames Dropped",
-          "codec": "Codec",
-          "bitrate": "Bitrate",
-          "totalData": "Total Data",
-          "packetsRx": "Packets RX",
-          "packetsLost": "Packets Lost",
-          "lossPercent": "Loss %",
-          "jitter": "Jitter"
-        }
       }
     }
   },

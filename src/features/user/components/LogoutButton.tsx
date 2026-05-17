@@ -16,6 +16,7 @@ import { tokens } from '@shared/theme/tokens';
 import { globalStyles } from '@shared/theme/globalStyleSheet';
 
 import { testProps } from "@shared/utils/testProps";
+import { useTranslation } from 'react-i18next';
 // Types
 interface LogoutButtonProps {
   /** Press handler */
@@ -41,6 +42,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
   isLoading = false,
   qaId,
 }) => {
+   const { t } = useTranslation();
   return (
     <Pressable {...(qaId ? testProps(qaId) : {})}
       style={[globalStyles.settingsSection, styles.container]}
@@ -53,7 +55,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
         <>
           <LogOut size={20} color={tokens.colors.red} />
           <Text {...testProps("text_logout_button")} style={[globalStyles.fontMedium, styles.text]}>
-            Log Out
+             {t('user.profile.logoutModal.logout')}
           </Text>
         </>
       )}
