@@ -4,7 +4,7 @@ export default {
     slug: process.env.APP_SLUG || "esp-rainmaker-home",
     version: process.env.APP_VERSION || "4.2.0",
     orientation: "portrait",
-    icon: "./src/assets/images/logo.png",
+    icon: "./src/assets/images/icon.png",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
@@ -12,8 +12,9 @@ export default {
       bundleIdentifier: process.env.IOS_APP_APPLICATION_ID || "com.espressif.novahome"
     },
     android: {
+        package: "com.crobot.daojia",
       adaptiveIcon: {
-        foregroundImage: "./src/assets/images/logo.png",
+        foregroundImage: "./src/assets/images/icon.png",
         backgroundColor: "#ffffff"
       }
     },

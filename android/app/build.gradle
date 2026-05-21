@@ -1,55 +1,23 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-apply plugin: "com.google.gms.google-services"
-
-def googleServicesFile = file("google-services.json")
-if (!googleServicesFile.exists()) {
-    def templateFile = file("google-services.json.template")
-    if (templateFile.exists()) {
-        logger.warn("google-services.json not found — copying from template (placeholder values)")
-        templateFile.withInputStream { is -> googleServicesFile.withOutputStream { os -> os << is } }
-    } else {
-        logger.warn("google-services.json not found and no template available — Firebase features will fail")
-    }
-}
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
-
-/**
- * Helper function to read properties from gradle.properties
- * @param key Property key name
- * @return Property value (throws error if not found)
- */
-def getProp = { key ->
-    def value = project.findProperty(key)
-    if (value == null) {
-        throw new GradleException("Required property '$key' not found in gradle.properties")
-    }
-    return value
-}
-
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
 
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
-   entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
-   reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-   hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
-   codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+    reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
 
-//    // Use Expo CLI to bundle the app, this ensures the Metro config
-//    // works correctly with Expo projects.
-   cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
-   bundleCommand = "export:embed"
+    // Use Expo CLI to bundle the app, this ensures the Metro config
+    // works correctly with Expo projects.
+    cliFile = new File(["node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"].execute(null, rootDir).text.trim())
+    bundleCommand = "export:embed"
 
     /* Folders */
      //   The root of your project, i.e. where "package.json" lives. Default is '../..'
@@ -97,7 +65,7 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = true
+def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInReleaseBuilds') ?: false).toBoolean()
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -118,52 +86,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.app'
-    
-    // Configure native libraries path
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['third_party/connectedhomeip/libs/jniLibs']
-        }
-    }
-    defaultConfig {        applicationId "com.espressif.novahome"
+    namespace 'com.crobot.daojia'
+    defaultConfig {
+        applicationId 'com.crobot.daojia'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode getProp("ANDROID_VERSION_CODE").toInteger()
-        versionName getProp("APP_VERSION")
-        
-        // Configure app name from gradle.properties
-        resValue "string", "app_name", getProp("APP_NAME")
-        
-        // Notification strings from gradle.properties
-        resValue "string", "notification_title", getProp("APP_NOTIFICATION_DEFAULT_TITLE")
-        resValue "string", "notification_body", getProp("APP_NOTIFICATION_DEFAULT_BODY")
-        
-        // BuildConfig fields from gradle.properties
-        buildConfigField "String", "THIRD_PARTY_AUTH_REDIRECT_URL", "\"${getProp("THIRD_PARTY_AUTH_REDIRECT_URL")}\""
-        buildConfigField "String", "APP_NOTIFICATION_DEFAULT_TITLE", "\"${getProp("APP_NOTIFICATION_DEFAULT_TITLE")}\""
-        buildConfigField "String", "APP_NOTIFICATION_DEFAULT_BODY", "\"${getProp("APP_NOTIFICATION_DEFAULT_BODY")}\""
-        
-        // Matter configuration from gradle.properties
-        // Parse hex vendor ID (e.g., "0x131B" -> 4891)
-        // Default to 0x0 if not provided or empty
-        def matterVendorIdStr = project.findProperty("MATTER_VENDOR_ID")
-        if (matterVendorIdStr == null || matterVendorIdStr.isEmpty()) {
-            matterVendorIdStr = "0x0"
-        }
-        def matterVendorIdInt = matterVendorIdStr.startsWith("0x") || matterVendorIdStr.startsWith("0X") 
-            ? Integer.parseInt(matterVendorIdStr.substring(2), 16) 
-            : Integer.parseInt(matterVendorIdStr)
-        buildConfigField "int", "MATTER_VENDOR_ID", "${matterVendorIdInt}"
-        
-        // Manifest placeholders from gradle.properties
-        manifestPlaceholders = [
-            AGENTS_DEEP_LINK_SCHEME: getProp("AGENTS_DEEP_LINK_SCHEME"),
-            AGENTS_DEEP_LINK_HOST: getProp("AGENTS_DEEP_LINK_HOST"),
-            AGENTS_DEEP_LINK_PATH_PREFIX: getProp("AGENTS_DEEP_LINK_PATH_PREFIX"),
-            THIRD_PARTY_AUTH_REDIRECT_SCHEME: getProp("THIRD_PARTY_AUTH_REDIRECT_SCHEME"),
-            THIRD_PARTY_AUTH_REDIRECT_HOST: getProp("THIRD_PARTY_AUTH_REDIRECT_HOST")
-        ]
+        versionCode 1
+        versionName "4.2.0"
     }
     signingConfigs {
         debug {
@@ -172,28 +101,15 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-
-        release {
-            def storeFilePath = keystoreProperties['storeFile']
-            if (storeFilePath) {
-                storeFile file(storeFilePath)
-                storePassword keystoreProperties['storePassword']
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
-            }
-        }
     }
-
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            minifyEnabled false
-            shrinkResources false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            crunchPngs true
         }
         release {
-            signingConfig signingConfigs.release
+            // Caution! In production, you need to generate your own keystore file.
+            // see https://reactnative.dev/docs/signed-apk-android.
+            signingConfig signingConfigs.debug
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
@@ -207,10 +123,6 @@ android {
     }
     androidResources {
         ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
-    }
-    aaptOptions {
-        // Global AAPT2 PNG crunch.
-        cruncherEnabled (findProperty('android.enableAaptPngCrunch')?.toBoolean() ?: false)
     }
 }
 
@@ -236,42 +148,7 @@ android {
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
-    implementation fileTree(dir: "third_party/connectedhomeip/libs", include: ["*.jar", "*.so"])
-    implementation fileTree(dir: "src/main/libs", include: ["*.aar"])
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-
     implementation("com.facebook.react:react-android")
-    implementation("com.github.espressif:esp-idf-provisioning-android:lib-2.2.3")
-    implementation ("org.greenrobot:eventbus:3.3.1")
-    implementation 'com.google.android.gms:play-services-cast:22.1.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx:22.1.2'
-    implementation platform('com.google.firebase:firebase-bom:33.5.1')
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-common-ktx:21.0.0'
-
-    // Google Play Services Matter APIs
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-
-    implementation 'commons-codec:commons-codec:1.19.0'
-    implementation 'commons-logging:commons-logging:1.2'
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
-    implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
-    implementation 'org.bouncycastle:bcutil-jdk15on:1.70'
-
-    // Protobuf dependency for Matter TLV and certificate handling
-    implementation 'com.google.protobuf:protobuf-javalite:4.32.1'
-
-    // Google Play Services Matter APIs for commissioning UI
-    implementation 'com.google.android.gms:play-services-base:18.8.0'
-    implementation 'com.google.android.gms:play-services-home:16.0.0'
-
-    implementation 'com.google.code.gson:gson:2.13.2'
-    
-    // Chrome Custom Tabs for in-app OAuth browser
-    implementation 'androidx.browser:browser:1.8.0'
-
-    // AWS IoT MQTT (ESPMQTTModule — mobileconnectors.iot)
-    implementation 'com.amazonaws:aws-android-sdk-iot:2.81.0'
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
@@ -297,7 +174,3 @@ dependencies {
         implementation jscFlavor
     }
 }
-
-project.ext.react = [
-  enableHermes: true
-]
