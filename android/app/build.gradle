@@ -88,7 +88,7 @@ android {
 
     namespace 'com.crobot.daojia'
     defaultConfig {
-        applicationId 'com.crobot.daojia'
+        applicationId "com.crobot.daojia"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

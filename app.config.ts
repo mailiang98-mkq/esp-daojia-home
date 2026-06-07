@@ -13,6 +13,7 @@ export default {
     },
     android: {
         package: "com.crobot.daojia",
+        
       adaptiveIcon: {
         foregroundImage: "./src/assets/images/icon.png",
         backgroundColor: "#ffffff"
@@ -24,6 +25,7 @@ export default {
       favicon: "./src/assets/images/logo.png"
     },
     plugins: [
+      "expo-asset",
       "expo-router",
       [
         "expo-splash-screen",

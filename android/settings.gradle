@@ -20,8 +20,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
     ex.autolinkLibrariesFromCommand(command)
   }
 }
-
-rootProject.name = 'u5230u5BB6'
+rootProject.name = 'com.crobot.daojia'
 
 dependencyResolutionManagement {
   versionCatalogs {
