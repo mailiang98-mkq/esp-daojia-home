@@ -63,20 +63,6 @@ The backend service is closed-source, built on AWS serverless stack (Lambda, Dyn
 | Target Platforms   | Android, iOS                               |
 
 ### Architecture
-┌──────────────────────────────────────────────────────┐
-│                   React UI (features/)               │
-├──────────────────────────────────────────────────────┤
-│              CDF Store (src/store/)                  │
-│  MobX stores · Entities · Synchronizers · Registry   │
-├──────────────────────────────────────────────────────┤
-│           SDK Adaptor (src/sdk-adaptors/)            │
-│         ESPRMBaseSDKAdaptor + Transformers           │
-├──────────────────────────────────────────────────────┤
-│        ESP RainMaker Base SDK / Matter SDK           │
-├──────────────────────────────────────────────────────┤
-│        Native Adaptors (src/native-adaptors/)        │
-│  Prov · LocalControl · Discovery · OAuth · Matter…   │
-└──────────────────────────────────────────────────────┘
 
 ```
 ┌──────────────────────────────────────────────────────┐
