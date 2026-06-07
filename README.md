@@ -1,13 +1,18 @@
-# navo Home App
+#  navo Home App
 
 <div align="center">
+<p align="center">
   <img src="src/assets/images/logo.png" alt="navo Home App" width="200"/>
+</p>
 </div>
 
+
 <div align="center">
+
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)](https://opensource.org/licenses/Apache-2.0)
 [![React Native](https://img.shields.io/badge/React%20Native-v0.76.9-blue.svg)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-SDK%2052-black.svg)](https://expo.dev/)
+
 </div>
 
 <div align="center">
@@ -73,6 +78,22 @@ The backend service is closed-source, built on AWS serverless stack (Lambda, Dyn
 │  Prov · LocalControl · Discovery · OAuth · Matter…   │
 └──────────────────────────────────────────────────────┘
 
+```
+┌──────────────────────────────────────────────────────┐
+│                   React UI (features/)               │
+├──────────────────────────────────────────────────────┤
+│              CDF Store (src/store/)                  │
+│  MobX stores · Entities · Synchronizers · Registry  │
+├──────────────────────────────────────────────────────┤
+│           SDK Adaptor (src/sdk-adaptors/)            │
+│         ESPRMBaseSDKAdaptor + Transformers           │
+├──────────────────────────────────────────────────────┤
+│        ESP RainMaker Base SDK / Matter SDK           │
+├──────────────────────────────────────────────────────┤
+│        Native Adaptors (src/native-adaptors/)        │
+│  Prov · LocalControl · Discovery · OAuth · Matter…  │
+└──────────────────────────────────────────────────────┘
+```
 
 ## Run & Build method
 
