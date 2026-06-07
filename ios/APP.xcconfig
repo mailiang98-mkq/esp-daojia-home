@@ -30,22 +30,22 @@
 // ============================================================================
 
 // App Display Name (shown on home screen)
-APP_DISPLAY_NAME = ESP RainMaker Home
+APP_DISPLAY_NAME = \u5230\u5BB6
 
 // App Bundle Identifier (main app)
-APP_BUNDLE_ID = com.espressif.nova
+APP_BUNDLE_ID = com.crobot.daojia
 
 // App Group Identifier (for sharing data between app and extensions)
-APP_GROUP_ID = group.com.espressif.novahome
+APP_GROUP_ID = group.com.crobot.daojia
 
 // Matter Extension Bundle Identifier
-APP_MATTER_EXTENSION = com.espressif.nova.MatterExtension
+APP_MATTER_EXTENSION = com.crobot.daojia.MatterExtension
 
 // App Version (marketing version)
 APP_VERSION = 4.2.0
 
 // App URL Scheme (used in Info.plist)
-APP_SCHEMA = rainmaker
+APP_SCHEMA = crobot
 
 // Associated Domain for Universal Links (domain only, without applinks: prefix)
 ASSOCIATED_DOMAIN = agents.espressif.com

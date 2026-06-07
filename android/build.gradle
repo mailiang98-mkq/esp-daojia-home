@@ -3,10 +3,11 @@
 buildscript {
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '28')
+        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
-        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '35')
-        kotlinVersion = '1.9.25'
+        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.25'
+
         ndkVersion = "26.1.10909125"
     }
     repositories {
@@ -16,8 +17,7 @@ buildscript {
     dependencies {
         classpath('com.android.tools.build:gradle')
         classpath('com.facebook.react:react-native-gradle-plugin')
-        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.25')
-        classpath 'com.google.gms:google-services:4.4.3'
+        classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
     }
 }
 
@@ -37,15 +37,5 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
-    }
-    
-    // Force Kotlin 1.9.24 for all modules to resolve Compose compatibility
-    configurations.all {
-        resolutionStrategy.eachDependency { details ->
-            if (details.requested.group == 'org.jetbrains.kotlin') {
-                details.useVersion '1.9.25'
-                details.because 'Force Kotlin 1.9.25 for Compose compatibility'
-            }
-        }
     }
 }
